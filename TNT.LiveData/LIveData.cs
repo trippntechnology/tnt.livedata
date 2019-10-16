@@ -50,6 +50,10 @@ namespace TNT.LiveData
 		/// </summary>
 		/// <param name="observer"><see cref="Action"/> that is called when <see cref="Value"/>
 		/// changes</param>
-		public void Observe(Action<T> observer) => OnChanged += observer;
+		public void Observe(Action<T> observer)
+		{
+			OnChanged += observer;
+			observer(this.Value);
+		}
 	}
 }
