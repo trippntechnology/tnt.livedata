@@ -55,5 +55,11 @@ namespace TNT.LiveData
 			OnChanged += observer;
 			observer(this.Value);
 		}
+
+		public void AddSource<S>(LiveData<S> source, Action<S> action)
+		{
+			//sources.Add(source);
+			source.OnChanged += action;
+		}
 	}
 }

@@ -43,14 +43,37 @@ namespace TNT.LiveData
 		/// <returns><see cref="LiveData{R}"/> that represents the transformed data</returns>
 		public static LiveData<R> SwitchMap<T, R>(LiveData<T> source, Func<T, LiveData<R>> func)
 		{
-			var liveData = func(source.Value);
+			var switchMapLive = new LiveData<R>();
+			LiveData<R> prevLive = null;
 
-			source.OnChanged += (value) =>
+			switchMapLive.AddSource(source, t =>
 			{
-				liveData = func(value);
-			};
+				var funcLive = func(t);
 
-			return liveData;
+				if (prevLive == funcLive)
+				{
+					return;
+				}
+				else 
+				{
+					if (prevLive != null)
+					{
+						prevLive.OnChanged -= (v) =>
+						{
+							switchMapLive.Value = v;
+						};
+					}
+
+					switchMapLive.Value = funcLive.Value;
+					funcLive.OnChanged += (v) =>
+					{
+						switchMapLive.Value = v;
+					};
+					prevLive = funcLive;
+				}
+			});
+
+			return switchMapLive;
 		}
 	}
 }
